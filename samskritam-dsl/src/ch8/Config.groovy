@@ -1,4 +1,4 @@
 package ch8;
 script { 
-	decoder = 'ch8.tokenizers.SimpleScriptTokenizer' 
+	decoder = 'ch8.schemes.SimpleScriptScheme' 
 }

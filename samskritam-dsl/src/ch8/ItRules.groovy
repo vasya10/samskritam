@@ -18,8 +18,8 @@ class ItRules {
   //lashaku (ataddhite)
   def lashaku = 'ls'.varnas() + samjna.ku
 
-  //some more to be defined
-  def adirnitudavaH = ["n.i",'tu', 'du']
+  //adirnitudavaH
+  def adirnitudavaH = ['n.e','tu', 'du']
   
   //#(1.3.3) halantyam - check if the last char is hal
   SivaSutra sivaSutra = SivaSutra.instance
@@ -33,4 +33,9 @@ class ItRules {
   boolean itVarna(String varna) { varna in allItVarnas }
 
   String tasyaLopah(String pratyaya) { (pratyaya.halantyam().varnas() - allItVarnas).join() }
+  
+  boolean isPit(String pratyaya) { 'p' in pratyaya.varnas() }
+  boolean isKit(String pratyaya) { 'k' in pratyaya.varnas() }
+  boolean isNit(String pratyaya) { 'N' in pratyaya.varnas() }
+
 }

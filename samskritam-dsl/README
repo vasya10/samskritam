@@ -1,0 +1,56 @@
+Project Name: samskritam-dsl
+Author: vasya10
+Blessed Date: Nov 2011
+
+==================================================================================================================================
+
+Goals:
+
+ - Provide a consistent domain-specific-language medium to analyse samskritam both lexically and syntactically
+ - DSL must be usable by any samskritam pandit and not restricted to programmers
+ - Code Panini's ashtadhyayI rules in a very simplified manner, using meta-programming techniques
+ - Samjna, sandhi, dhatu and similar operations must be achieved in an arithmetic way 
+ - Transliteration scripts are pluggable (IAST, ITRANS, HK etc)
+
+==================================================================================================================================
+
+Possibilities:
+
+1. Dynamically use maheshvara sutra pratyahara as a string or property
+
+	- sivasutra.Ic; will expand to I (ai), O. (au)
+	- sivasutra.hl; will expand to a list of all consonants
+  - sivasutra.ac; will expand to a list of all vowels
+  
+2. Model samjna sutra-s using arithmetic/algebraic notations:
+
+  - vruddhi = At. + Ic; will expand to A, I (ai), O. (au)
+  - guna    = at. + en; will expand to a, e, O
+  
+3. Model "it" rules using arithmetic/algebraic notations and techniques 
+
+  - cu; will expand to c, ch, j, jh, ~n
+  - 'tin'.halantyam(); will remove the last hal resulting in 'ti'
+  - 'sap'.tasyaLopah(); will remove s (due to lashakvataddhite) and p due to halantyam() and will result in 'a' 
+   
+4. Iterate on syllables directly over a string
+
+  - 'kr.s.Na:'.each {} will produce k, r., s., N, a, :
+  
+5. Convert from string to unicode directly
+
+  - 'kr.s.Na:'.unicode() should produce &#x915;&#x943;&#x937;&#x94D;&#x923;&#x903;
+ 
+ 
+==================================================================================================================================
+ 
+To Do:
+
+ - Do sandhi rules using simple arithmetics on strings (plus and minus)
+   
+   * ka: + ca => kasca
+   * rAma + ayaNam => rAmAyanam 
+   
+ - Do dhatu forms using simple arithmetics on strings (plus and minus)
+ 
+   * assert bhavati == bhU + sap + tin  
