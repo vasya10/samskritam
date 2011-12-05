@@ -90,10 +90,17 @@ void methods() {
   println s.length()
   println s.size()
 }
+
+void nearest3() {
+  def k = [0,1,2,3,4,5,6,7,8,9,10]
+  k.eachWithIndex { a, i-> def p = (int) a/3; println (p) * a }
+  //k.each { println ((int) (it/3))*it } 
+}
 //testTuple()
 //testListRange()
 //testListTriplet()
 //testGroovyTruth()
 //testStringIndexOutOfBoundException()
 //testTokenizer()
-methods()
+//methods()
+nearest3()

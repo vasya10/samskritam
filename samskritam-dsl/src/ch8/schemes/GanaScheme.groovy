@@ -1,6 +1,12 @@
 package ch8.schemes
 
-public interface GanaScheme {
+public class GanaScheme {
 
-  public List toBinary(String word)
+  def GURU = '1'
+  def LAGHU = '0'
+  
+  def encoding = 'yamAt.ArAjaBaN.aSalagam'
+  public List toBinary(String word) {
+    
+  }
 }

@@ -26,20 +26,6 @@ class TimerConsumer implements GroovyInterceptable {
 }
 
 
-class Timer {
-
-  static Date begin
-  static Date end
-
-  static void start() {
-    begin = new Date()
-  }
-
-  static String stop() {
-    end = new Date()
-    TimeCategory.minus(end, begin).toString()
-  }
-}
 
 TimerConsumer tc = new TimerConsumer()
 tc.test('calc', null)
