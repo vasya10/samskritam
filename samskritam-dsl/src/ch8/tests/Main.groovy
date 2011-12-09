@@ -1,12 +1,14 @@
 package ch8.tests
 
-import java.util.List
-
 import ch8.ItRules
 import ch8.Samjna
 import ch8.SivaSutra
-import ch8.schemes.SimpleScriptScheme
+import ch8.schemes.NativeScriptScheme
 import ch8.util.StopWatch
+import ch8.util.UnicodeUtil
+
+evaluate(new File("ch8/Bootstrap.groovy"))
+def Vrutti = new ConfigSlurper().parse(ch8.config.Vrutti)
 
 examples = ['suklAmbaraD.araM', 'kr.s.Na:', 'kArt.SN.yam', 'vASud.Evad.vAd.asAks.aramaN.t.rAN.t.argat.a', 'kuruks.E.t.rE.', 
             'Ad.esE.s.a', 'ad.rerAjaSut.At.majam','srEmad.ves.NvanGreN.es.Ta:','yamAt.ArAjaBAN.aSalagaM'
@@ -14,161 +16,13 @@ examples = ['suklAmbaraD.araM', 'kr.s.Na:', 'kArt.SN.yam', 'vASud.Evad.vAd.asAks
 
 slokas = [ 'suklAmbaraD.aram ves.Num sasevarNam cat.urBujam | prasaN.N.avad.aN.am D.yAyE.t. SarvaveGN.Opa sAN.t.ayE. ||',
            'vyASam vaSes.Ta N.aPt.Aram sakt.E.: pO.t.ram akalmas.am | parASarAt.majam vaN.d.E. sukat.At.am t.apON.N.eD.em ||',
-           'yA kuN.d.E.N.d.u t.us.Ara hAraD.avalA yA suBravaSt.rAvr.t.A | yA vENAvara d.aNdamaNdet.akarA yA svEt.a pad.mASaN.A | yA brahmAcyut.a sankarA praBr.t.eBerd.E.vI: Sad.A vaN.d.et.A | SA mAM pAt.u SaraSvat.E Bagavat.E N.e:sE.s.a jAdyApahA ||',
+           'yA kuN.d.E.N.d.u t.us.Ara hAraD.avalA yA suBravaSt.rAvr.t.A | yA vENAvara d.aNdamaNdet.akarA yA svE.t.a pad.mASaN.A | yA brahmAcyut.a sankarA praBr.t.eBerd.E.vI: Sad.A vaN.d.et.A | SA mAM pAt.u SaraSvat.E Bagavat.E N.essE.s.a jAdyApahA ||',
            'rAmAya sAsvat.a SuveSt.r.t.a s.adguNAya SarvE.svarAya balavErya mahArNavAya | N.atvA lelangayes.u arNavam utpapAta Nes.pEdya t.am gerevaram pavaN.asya SUN.u:'
          ]
 
-chandasDefs = [ 'gmO. cet. kaN.yA',
-                'BgO. get.e pankt.e:',
-                't.yO. cet. t.aN.umaD.yamA'
-              ]
-// MetaMethod: varnas() closure - tokenize the script into individual varnas (list)
-Closure varnasClosure = { item -> new SimpleScriptScheme().tokenize(item) }
-varnasClosure.memoize()
-//String.metaClass.varnas = { new SimpleScriptScheme().tokenize(delegate) }
-String.metaClass.varnas = { varnasClosure.call(delegate) }
+slokasHk = [ 'zuklAmbaradharam viSNum zazivarNam caturbhujam | prasannavadanam dhyAyet sarvavighnopa zAntaye ||']
 
-// MetaMethod: Direct exposition of a pratyaya or a pratyahara!
-SivaSutra sivaSutra = SivaSutra.instance
-sivaSutra.metaClass.getProperty = { String pratyahara ->
-  def metaProperty = SivaSutra.metaClass.getMetaProperty(pratyahara)
-//  def result
-  if(metaProperty) {
-    //if there is an existing property invoke that
-    return metaProperty.getProperty(delegate)
-  }
-  pratyahara.taparaH() ? (pratyahara - 't.').varnas() : sivaSutra.collect(pratyahara)
-}
-
-// MetaMethod: halantyam() closure - remove the last hal iT and return the modified String
-ItRules itRules = ItRules.instance
-String.metaClass.halantyam = {
-  def varnas = delegate.varnas() as List
-  if (itRules.hasHalantyam(delegate)) {
-    varnas.remove(varnas.size()-1)
-  }
-  varnas.join()
-}
-
-// MetaMethod: tasyaLopah() closure - remove all the it-markers from a pratyaya
-String.metaClass.tasyaLopah = {
-  //ItRules itRules = ItRules.instance
-  itRules.tasyaLopah(delegate)
-}
-
-Samjna samjna = Samjna.instance
-
-// MetaMethod: is a given string a vowel?
-String.metaClass.svara = { delegate in samjna.svara }
-
-// MetaMethod: is a given string a consonant?
-String.metaClass.hal = { delegate in samjna.hal() }
-
-// MetaMethod: taparastatkaalasya rule
-String.metaClass.taparaH = { delegate.endsWith('t.') }
-
-// MetaMethod: is a given string an anusvara?
-String.metaClass.anusvara = { delegate in samjna.anusvara }
-
-// MetaMethod: is a given string a visarga?
-String.metaClass.visarga = { delegate in samjna.visarga }
-
-// MetaMethod: convert string to unicode
-String.metaClass.unicode = { new SimpleScriptScheme().unicodize(delegate) }
-
-// MetaMethod: if two consonants follow each other, then it is samyuktakshara
-String.metaClass.samyuktakshara = { def v = delegate.varnas(); (v.size() > 1) ? v[0].hal() && v[1].hal() : false }
-
-String.metaClass.singleConsonant = { def v = delegate.varnas(); v.size() == 1 && v[0].hal() }
-
-String.metaClass.singleVowel = { def v = delegate.varnas(); v.size() == 1 && v[0].svara() }
-
-// MetaMethod: is samyoga akshara and ends with vowel?
-String.metaClass.endsWithSvara = { delegate.samyuktakshara() && delegate.varnas().last() in samjna.svara }
- 
-// MetaMethod: is samyoga akshara and ends with consonant?
-String.metaClass.endsWithVyanjana = { !delegate.endsWithSvara() }
-
-String.metaClass.hrsva = { delegate in samjna.hrsva } 
-
-String.metaClass.dIrgha = { delegate in samjna.dIrgha }
-
-String.metaClass.hrsvakshara = { (delegate.varnas() - sivaSutra.hl).every { it.hrsva() } }
-
-String.metaClass.dIrghakshara = { (delegate.varnas() - sivaSutra.hl).any { it.dIrgha() } }
-
-String.metaClass.token = { delegate in [' ','|'] }
-
-//short-cut method for directly referencing a range of letters in pratyahara list
-List.metaClass.range = { first, last ->
-  if (first == String && last == String) {
-    delegate[delegate.indexOf(first)..delegate.indexOf(last)]
-  } else {
-    delegate[first..last]
-  }
-} 
-
-//create a [prev,current,next] list triplet from an array
-List.metaClass.triplet = { i -> delegate.size() <= 0 ? [null,null,null] : i == 0 ? [null, delegate[i], (delegate.size()>1) ? delegate[i+1] : null] : (i==delegate.size()) ? [(i<1) ? null : delegate[i-1]] : [delegate[i-1], delegate[i], delegate[i+1]] }
-
-//overrides default iterator; iterate directly over the varna-s from a string
-String.metaClass.iterator = { delegate.varnas().iterator() }
-
-//overrides default String next(); get the next varna in a string, goes along with iterator override
-String.metaClass.next = { delegate.varnas().next() }
-
-/** syllable related functions */
-
-// MetaMethod: syllablize
-Closure c = { item -> new SimpleScriptScheme().syllablize(item) }
-c.memoize()
-String.metaClass.syllablize = { new SimpleScriptScheme().syllablize(delegate) }
-//String.metaClass.syllablize = { c.call(delegate) }
-
-String.metaClass.syllableLength = { delegate.syllablize().size() }
-
-//Meta-method: returns weight of a given syllable (assumes syllable does not include tokens) 
-//String.metaClass.syllableWeight = { def v = delegate.varnas(); v.sum { it.hal() ? 0.5 : it.hrsva() ? 0.5 : 1.5 } }
-String.metaClass.syllableWeight = { delegate.samyuktakshara() ? 2.0 : delegate.dIrghakshara() ? 1.5 : 1.0 }
-
-//Meta-method: returns list of weight of each syllable (syllablize method will eliminate tokens)
-String.metaClass.weights = { delegate.syllablize().collect { it.syllableWeight() } }
-
-//Meta-method: returns total weight of given sentence 
-String.metaClass.totalWeight = { delegate.weights().sum() }
-
-
-// is given syllable a guru
-String.metaClass.chandas = { 
-  def w = delegate.weights()
-  def s = delegate.syllablize()
-  def metre = []
-  //println 'weights = ' + w
-  for (int i=0;i<w.size();i++) {
-    def k = w[i+1]>=2.0 ? '1' : w[i]>=1.5 ? '1' : '0'
-    println "$i: ${s[i]}, ${w[i]}, ${w[i+1]}, $k"
-    metre << k
-  }
-  metre
-}
-
-String.metaClass.gana = {
-  def chandas = delegate.chandas()
-  int max3 = ((int) (chandas.size()/3))*3
-  def g = [] 
-  for (int i=0; i<max3; i+=3) {
-   g << "$i: ${chandas[i]}${chandas[i+1]}${chandas[i+2]}"
-  }
-  for (int i=max3;i<chandas.size();i++) {
-    g << "$i: ${chandas[i]}"
-  }
-  g
-}
-
-/* =============================================================================================================================== *
- * =============================================================================================================================== *
- * =============================================================================================================================== * 
- */
+chandasDefs = [ Vrutti.kanya, Vrutti.pankti, Vrutti.tanumadhya ]
 
 void testVarnas() {
   println '\n---- testVarnas ---- \n\n'
@@ -219,6 +73,15 @@ void testSivaSutra() {
   
   //Access pratyahara-s directly just like properties!
   assert ['a', 'e', 'u'] == sivaSutra.'aN'
+}
+
+
+void testHrasvakshara() {
+  println '\n---- testHrasvakshara ---- \n\n'
+  
+  slokas[2].syllablize().each {
+    println it + ' = ' + (it.hrasvakshara() ? 0 : 1)
+  }  
 }
 
 void testItRules() {
@@ -281,94 +144,116 @@ void testIfEndsWithSvara() {
 void testStringIterator() {
   println '\n---- testStringIterator ---- \n\n'
   
-  examples.each { example -> println example + ' = ' + example.each {}.collect { it } }
+  examples.each { example -> example.each { print it + ',' } }
 }
 
 void testSamyuktakshara() {
+  println '\n---- testSamyuktakshara ---- \n\n'
+  
   slokas.each { it.tokenize().each { it.syllablize().each { println it + ' = ' + it.samyuktakshara() } } }
 }
 
 void testSyllablizeWord() {
   println '\n---- testSyllablizeWord ---- \n\n'
-  examples.each { println it + ' = ' + new SimpleScriptScheme().syllablize(it) }
+  examples.each { println it + ' = ' + new NativeScriptScheme().syllablize(it) }
  
   //Asserts  
-  assert ['su', 'klA', 'mba', 'ra', 'D.a', 'ram'] == new SimpleScriptScheme().syllablize('suklAmbaraD.aram')
+  assert ['su', 'klA', 'mba', 'ra', 'D.a', 'ram'] == new NativeScriptScheme().syllablize('suklAmbaraD.aram')
 }
 
-void testSyllablizeSloka() {
-  println '\n---- testSyllablizeSloka ---- \n\n'
+void testPerformanceSyllablizeSloka() {
+  println '\n---- testPerformanceSyllablizeSloka ---- \n\n'
   
-  slokas.each { println it.syllablize() } 
+  slokas.each { println it.syllablize() }
 }
 
 void testSlokaSize() {
   println '\n---- testSlokaSize ---- \n\n'
   
   slokas.each { println it + ' = ' + it.syllableLength() }
+  assert slokas.collect { it.syllableLength() } == [32, 32, 76, 56]
 }
 
 void testUnicode() {
   println '\n---- testUnicode ---- \n\n'
   
   slokas.each { 
-    println it + '<br/>'
-    println it.unicode() + '<br/>'
+    println it + '<br/>' + it.unicode() + '<br/><br/>'
   }
   //Asserts  
-  assert 'suklAmbaraD.araM'.unicode() == '&#x936;&#x941;&#x915;&#x94D;&#x932;&#x93E;&#x92E;&#x94D;&#x92C;&#x930;&#x927;&#x930;&#x902;'
+  assert 'suklAmbaraD.araM'.unicode() == '\u0936\u0941\u0915\u094D\u0932\u093E\u092E\u094D\u092C\u0930\u0927\u0930\u0902'
 }
 
-void testWeight() {
-  println '\n---- testWeight ---- \n\n'
-
-  slokas.each { println it + ' = ' + it.syllableLength() }
-  slokas.each { println it.weights() } 
-}
-
-void testChandas() {
-  println '\n---- testChandas ---- \n\n'
+void testSlokaChandas() {
+  println '\n---- testSlokaChandas ---- \n\n'
   
-  slokas.each { sloka ->
-    def syllables = sloka.syllablize()
-    def chandas = sloka.chandas()
-    def weights = sloka.weights()
+  slokas.each { verse->
+    def syllables = verse.syllablize()
+    def metre = verse.metre()
     
-    println 'syllables = ' + syllables + ' = ' + syllables.size()
-    println 'weights = ' + weights + ' = ' + weights.size()
-    println 'chandas = ' + chandas + ' = ' + chandas.size()
+    println '\n\nsyllables = ' + syllables + ' = ' + syllables.size()
+    println 'metre = ' + metre + ' = ' + metre.size()
+    
     def map = [:]
-    for (int i=0;i<syllables.size(); i++) {
-      map.put(syllables[i], '(' + weights[i] + '-' + chandas[i] + ')')
-    }
-    println map
-    println sloka.gana()
+    0.step(syllables.size(),1) { map.put(syllables[it], metre[it]) }
+    println 'metre of each syllable = ' + map
+
+    println 'gana = ' + verse.metreAsString().metreAsGroup()
+    println 'gana = ' + verse.gana()
+    
+    //isn't this cool or what?
+    assert  'gmO. cet. kaN.yA'.gana() == ['ma', 'ga']
   }
 }
 
-void testChandasDefinitions() {
-  println '\n---- testChandasDefinitions ---- \n\n'
+void testChandasDefs() {
+  println '\n---- testChandasDefs ---- \n\n'
   
   chandasDefs.each { c ->
-    def syllables = c.syllablize()
-    def chandas = c.chandas()
-    def weights = c.weights()
-
-    println 'syllables = ' + syllables + ' = ' + syllables.size()
-    println 'weights = ' + weights + ' = ' + weights.size()
-    println 'chandas = ' + chandas + ' = ' + chandas.size()
+    def syllables = c.definition.syllablize()
+    def metre = c.definition.metre() //list of 1s, 0s
+    def gana = metre.join().metreAsGroup().gana()
+    def originalGana = c.definition.gana().syllablize()
+    
+    println "\n\n verifying ${c.name}"
+    println "syllables = $syllables = (${syllables.size()})"
+    println "metre = $metre = (${metre.size()})"
+    
     def map = [:]
-    for (int i=0;i<syllables.size(); i++) {
-      map.put(syllables[i], '(' + weights[i] + '-' + chandas[i] + ')')
-    }
-    println map
-    println 'gana = ' + c.gana()
+    0.step(syllables.size(),1) { map.put(syllables[it], metre[it]) }
+    println "metre of each syllable = $map"
+
+    println "chandas determined gana = $gana"
+    println "chandas original gana   = $originalGana"
+    
+    //isn't this absoluately cool or what?
+    assert  originalGana == gana
   }
 }
 
-void testSloka() {
-  def s = slokas[3]
+void testQuarters() {
+  println '\n---- testQuarters ---- \n\n'
   
+  slokas.each { sloka ->
+    println sloka.syllablize()
+    println sloka.gana()
+    def (p1,p2,p3,p4) = [sloka.pada1(),sloka.pada2(),sloka.pada3(),sloka.pada4()]
+    println "$p1\n$p2\n$p3\n$p4"
+  }
+}
+
+void testVarnas_HK() {
+  println '\n---- testVarnas_HK ---- \n\n'
+  
+  //DSL !!!
+  use(ch8.schemes.Script) {
+    println 'saMskRtam'.hk
+    println slokasHk[0].hk
+    assert 'lyuT'.hk == ['l', 'y', 'u', 'T']
+    assert 'saMskRtam'.hk == ['s', 'a', 'M', 's', 'k', 'R', 't', 'a', 'm']
+    assert 'madhvAcAryaH'.hk == ['m', 'a', 'dh', 'v', 'A', 'c', 'A', 'r', 'y', 'a', 'H']
+    assert 'rAmAnujaH'.hk == ['r', 'A', 'm', 'A', 'n', 'u', 'j', 'a', 'H']
+  }
 }
 
 void runAllTests() {
@@ -381,6 +266,7 @@ StopWatch.start()
 
 //testVarnas()
 //testSivaSutra()
+//testHrasvakshara()
 //testItRules()
 //testHalantyamRule()
 //testTasyaLopahRule()
@@ -389,14 +275,13 @@ StopWatch.start()
 //testStringIterator()
 //testSamyuktakshara()
 //testSyllablizeWord()
-//testSyllablizeSloka()
+//testPerformanceSyllablizeSloka()
 //testSlokaSize()
 //testUnicode()
-//testWeight()
-//testChandas()
-//testSloka()
-testChandasDefinitions()
-
+//testSlokaChandas()
+testChandasDefs()
+//testQuarters()
+//testVarnas_HK()
 
 //runAllTests()
 

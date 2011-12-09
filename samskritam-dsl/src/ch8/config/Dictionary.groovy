@@ -1,4 +1,4 @@
-package ch8
+package ch8.config
 
 /* 
  * Dictionary of samskritam words. Not sure what to do with this currently. Just an idea.

@@ -1,4 +1,9 @@
-package ch8.scripts
+package ch8.scratch
+
+import java.util.Hashtable.ValueCollection;
+
+import ch8.schemes.HKScriptScheme
+import ch8.schemes.NativeScriptScheme
 
 List.metaClass.range = { first, last ->
   if (first == String && last == String) {
@@ -77,10 +82,10 @@ void testStringIndexOutOfBoundException() {
 
 void testTokenizer() {
   String s = 'samskritam | bharati ||'
-  println s.tokenize(' |')
-  println s.split(/ \|\|/)
-  def st = new StringTokenizer(s, ' |', true)
-  st.each { print it + ","}
+  println "s.tokenize(' |'): " + s.tokenize(' |')
+  println "s.split(/ \\||\\|/): " + s.split(/(?=[ \|])(?<![ \|])|(?<=[ \|])(?![ \|])/)
+  println "StringTokenizer(s, ' |', true): " + (new StringTokenizer(s, ' |', true)).toList()
+  println "StringTokenizer(s, ' |', false): " + (new StringTokenizer(s, ' |', false)).toList()
 }
 
 void methods() {
@@ -96,6 +101,32 @@ void nearest3() {
   k.eachWithIndex { a, i-> def p = (int) a/3; println (p) * a }
   //k.each { println ((int) (it/3))*it } 
 }
+
+List testEachWithIndex() {
+  def list = [1,2,3,4,5,6,7,8,9]
+  def metre = []
+  metre << list.eachWithIndex { item, i -> (i<8) ? (list[i]+list[i+1]) : 100 }
+}
+
+void testStringArithmetic() {
+  String s = '1324123591235191351'
+  println s - '1'
+}
+
+void testScriptDsl() {
+  use(ch8.schemes.Script) {
+    println '\u0915\u093F\u092E'.unicode
+    println 'zuklAmbaradharam'.hk
+  }
+}
+
+void testMapFindKey() {
+  def maplist = [a:[1,2], b:[3,4], c:[4,5], d:[6,7]]
+  def findKey = { value -> (maplist.find { value in it.value }?.key)?:'Not Found' }
+  assert findKey(3) == 'b'
+  assert findKey(10) == "Not Found"
+}
+
 //testTuple()
 //testListRange()
 //testListTriplet()
@@ -103,4 +134,8 @@ void nearest3() {
 //testStringIndexOutOfBoundException()
 //testTokenizer()
 //methods()
-nearest3()
+//nearest3()
+//println testEachWithIndex()
+//testStringArithmetic()
+//testScriptDsl()
+testMapFindKey()

@@ -43,7 +43,7 @@ class Samjna {
   def hal = { sivaSutra.hl.unique() } //remove the duplicate h
   
   def dIrgha = 'AEUR.E.IOO.M:'.varnas()
-  def hrsva = svara - dIrgha
+  def hrasva = svara - dIrgha
   def vyanjana = allVarnas - svara
 
   //#(1.1.1) vruddhiraadiac
@@ -52,7 +52,7 @@ class Samjna {
   //#(1.1.2) adengunaH
   def guna = { sivaSutra.'at.' + sivaSutra.'E.n' }
   
-  //#(1.1.10) idudedoH pragruhyam
+  //#(1.1.10) iduded pragruhyam
   def pragruhyam = { sivaSutra.'Et.' + sivaSutra.'Ut.' + sivaSutra.'E.t.' }
   
   //def anga

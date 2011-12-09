@@ -1,6 +1,6 @@
 package ch8.tests
 
-import ch8.Dictionary;
+import ch8.config.Dictionary;
 
 def d = new ConfigSlurper().parse(new File("ch8/Dictionary.groovy").toURL())
 println d.aH

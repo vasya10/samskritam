@@ -3,8 +3,8 @@ package ch8
 import java.util.List
 
 /**
- * Implementation of Maheshvara Sutra using SimpleScript transliteration scheme
- * The table itself can be moved to a groovy configuration file to allow a different scheme like HK, ITRANS or AST
+ * Implementation of Maheshvara Sutra using NativeScript transliteration scheme
+ * The table itself can be moved to a groovy configuration file to allow a different scheme like HK, ITRANS or IAST
  * 
  * @author vsrinivasan
  */

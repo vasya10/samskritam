@@ -8,6 +8,6 @@ import java.util.List
  * @author vsrinivasan
  *
  */
-abstract class ItransScheme implements ScriptScheme {
+abstract class ItransScriptScheme implements ScriptScheme {
 
 }

@@ -1,4 +1,4 @@
-package ch8.scripts
+package ch8.scratch
 
 import groovy.xml.*
 
