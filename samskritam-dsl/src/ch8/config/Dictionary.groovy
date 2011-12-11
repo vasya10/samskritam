@@ -39,3 +39,4 @@ vishnu = 've.s.Nu'
 suklAH = 'suklA:'
 
 
+cAdi = ['ca', 'vA', 'ha', 'E.vam', 'nUnam', 'cet.', 'mAn'] //etc.

@@ -36,6 +36,8 @@ class SivaSutra  {
 
   int indexOf(String varna) { list.indexOf(varna) }
 
+  int lastIndexOf(String varna) { list.lastIndexOf(varna) }
+
   @Override
   Iterator iterator() { list.iterator() }
 
@@ -70,7 +72,10 @@ class SivaSutra  {
    */
   List collect(String pratyahara) {
     def (begin, end) = pratyahara.varnas()
-    def (b, e) = [indexOf(begin), indexOf(end + '!')]
+    
+    def (b, e1, e2) = [indexOf(begin), indexOf(end+'!'), lastIndexOf(end+'!')]
+    //N! occurs twice, so need to find the N! that comes after the beginning varna
+    def e = b<e1?e1:e2 
     list[b..e].collect { it.endsWith('!')?'':it } - ''
   }
 }

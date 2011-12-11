@@ -9,7 +9,7 @@ Laghu = '0'
 Avasanam = [' ', '|', '||'] //#() viramo avasaanam
 
 NativeScript {
-  varnamala = ['a','A','e','E','u','U','r.','R.','l.','E.','I','O','O.','M',':','k','K','g','G','n','c','C','j','J','n.','t','T','d','D','N','t.','T.','d.','D.','N.','p','P','b','B','m','y','r','l','v','s','s.','S','h','a.','M.',' ','|','||','OM'   ]
+  varnamala = ['a','A','e','E','u','U','r.','R.','l.','E.','I','O','O.','M',':','k','K','g','G','n','c','C','j','J','n.','t','T','d','D','N','t.','T.','d.','D.','N.','p','P','b','B','m','y','r','l','v','s','s.','S','h','a.','M.','OM',' ','|','||']
   anunasika = '-'
   anusvara = 'M'
   visarga = ':'
@@ -20,7 +20,7 @@ NativeScript {
 }
 
 HKScript {
-  varnamala = ['a','A','i','I','u','U','R','RR','L','e','ai','o','au','M','H','k','kh','g','gh','G','c','ch','j','jh','J','T','Th','D','Dh','N','t','th','d','dh','n','p','ph','b','bh','m','y','r','l','v','z','S','s','h','a.','M.',' ','|','||','oM'   ]
+  varnamala = ['a','A','i','I','u','U','R','RR','L','e','ai','o','au','M','H','k','kh','g','gh','G','c','ch','j','jh','J','T','Th','D','Dh','N','t','th','d','dh','n','p','ph','b','bh','m','y','r','l','v','z','S','s','h','a.','M.','oM',' ','|','||']
   anusvara = 'M'
   visarga = 'H'
   t = 't'

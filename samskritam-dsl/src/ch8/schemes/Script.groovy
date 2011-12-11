@@ -1,5 +1,7 @@
 package ch8.schemes;
 
+import ch8.SivaSutra
+
 /**
  * DSL for Devanagari Scripts !!!!!
  * 
@@ -16,6 +18,10 @@ class Script {
   
   def getNativeScript() {
     new NativeScriptScheme().tokenize(this)
+  }
+  
+  def getPratyahara() {
+    return SivaSutra.instance.collect(this)
   } 
   
   def getUnicode() {

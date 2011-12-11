@@ -1,5 +1,7 @@
 package ch8
 
+import java.awt.List;
+
 import ch8.schemes.NativeScriptScheme
 import ch8.schemes.HKScriptScheme
 
@@ -11,6 +13,31 @@ def GanaScheme = Definitions.Gana
 def Guru = GanaScheme.GURU
 def Laghu = GanaScheme.LAGHU
 
+
+/**
+ * @metamethod directly reference a range of letters in pratyahara list
+ * @given string1 varna, string2 varna
+ * @result list varnas between the two strings
+ * @example range('a','N')) -> [a,e,u,N]
+ */
+ArrayList.metaClass.range = { first, last ->
+  if (first instanceof String && last instanceof String) {
+    delegate[delegate.indexOf(first)..delegate.indexOf(last)]
+  } else {
+    delegate[first..last]
+  }
+} 
+
+/**
+ * @metamethod replace last varna with a given varna
+ * @usage used in purva sandhi
+ * @given list of varnas
+ * @result last varna is replaced with the given parameter
+ * 
+ * @example
+ */
+ArrayList.metaClass.replaceLast = { x -> delegate[delegate.size()-1] = x }
+
 /**
  * @metamethod tokenize the script into individual varnas; each letter is a valid varna 
  * @closure @memoize
@@ -21,6 +48,15 @@ def Laghu = GanaScheme.LAGHU
 Closure closureVarnas = { item, fromScript -> fromScript.tokenize(item) }
 def memoizeVarnas = closureVarnas.memoize()
 String.metaClass.varnas = { fromScript = DefaultScriptScheme -> memoizeVarnas(delegate, fromScript) }
+
+/**
+ * @metamethod remove last t from a pratyahara
+ * @given string pratyahara
+ * @result boolean
+ * @ch8 #taparastatkaalasya
+ */
+String.metaClass.taparaH = { delegate.endsWith(t) }
+
 
 /**
  * @metamethod direct exposition of a pratyaya or a pratyahara!
@@ -81,14 +117,6 @@ String.metaClass.svara = { delegate in samjna.svara }
  * @result boolean
  */
 String.metaClass.hal = { delegate in samjna.hal() }
-
-/**
- * @metamethod remove last t from a pratyahara
- * @given string pratyahara
- * @result boolean
- * @ch8 #taparastatkaalasya
- */
-String.metaClass.taparaH = { delegate.endsWith(t) }
 
 /**
  * @metamethod is a varna string an anusvara?
@@ -183,20 +211,6 @@ String.metaClass.hrasvakshara = { (delegate.varnas() - sivaSutra.hl).every { it.
 String.metaClass.dIrghakshara = { (delegate.varnas() - sivaSutra.hl).any { it.dIrgha() } }
 
 String.metaClass.token = { delegate in Tokens }
-
-/**
- * @metamethod directly reference a range of letters in pratyahara list
- * @given string1 varna, string2 varna
- * @result list varnas between the two strings
- * @example range('a','N')) -> [a,e,u,N]
- */
-List.metaClass.range = { first, last ->
-  if (first instanceof String && last instanceof String) {
-    delegate[delegate.indexOf(first)..delegate.indexOf(last)]
-  } else {
-    delegate[first..last]
-  }
-} 
 
 /**
  * @metamethod get a list of prev,current,next set from a list
@@ -331,3 +345,5 @@ String.metaClass.pada2 = { closurePada2(delegate.metre()) }
 String.metaClass.pada3 = { closurePada3(delegate.metre()) }
 String.metaClass.pada4 = { closurePada4(delegate.metre()) }
 
+
+ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }
