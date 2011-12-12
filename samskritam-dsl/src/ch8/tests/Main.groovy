@@ -273,19 +273,21 @@ void test_vyanjana_sandhi() {
   Samjna samjna = Samjna.instance
   SivaSutra sivaSutra = SivaSutra.instance
   
-  println sivaSutra.Js
+  println samjna.eko_yaN_aci('et.e ape')
+  println samjna.JalAm_jas_Jase('ap D.e')
+  println samjna.eco_ayavaayaavaH('cE. anam')
+  println samjna.eco_ayavaayaavaH('cI aka')
+  println samjna.eco_ayavaayaavaH('lO. aka')
+  println samjna.stoH_shcuna_schuH('vr.ks.aS sE.t.E.')
+  println samjna.stoH_shcuna_schuH('vr.ks.aS ceN.Ot.e')
+  println samjna.stoH_shcuna_schuH('agnecet. sE.t.E.')
+  println samjna.stoH_shcuna_schuH('agnecet. ceN.Ot.e')
   
-  //println samjna.eko_yaN_aci('et.e ape')
-  //println samjna.JalAm_jas_Jase('ap D.e')
-
-  println sivaSutra.ek
-  println sivaSutra.collect('yN')
-  assert samjna.eko_yaN_aci('et.e ape') == 'et.yape'
-  println "\n\nafter........."
-  println sivaSutra.ek
-  println sivaSutra.yN
-  println samjna.eko_yaN_aci('et.e ape') 
-  assert samjna.JalAm_jas_Jase('ap D.e') == 'abD.e'
+  assert samjna.eco_ayavaayaavaH('lO anam') == 'lavanam'
+  assert samjna.eco_ayavaayaavaH('cI aka') == 'cAyaka'
+  assert samjna.eco_ayavaayaavaH('lO. aka') == 'lAvaka'
+  
+  //assert samjna.JalAm_jas_Jase('ap D.e') == 'abD.e'
 }
 
 void test_pratyahara_dsl() {
@@ -299,12 +301,14 @@ void test_pratyahara_dsl() {
 void test_sthaneantaratamah() {
   SivaSutra sivaSutra = SivaSutra.instance
   Samjna samjna = Samjna.instance
-  def adesha = sivaSutra.yN
-  println adesha
   
   sivaSutra.ek.each {
-    println it + ' -> ' + samjna.sthaneAntaratamaH(it, adesha)
+    println it + ' -> ' + samjna.sthaneAntaratamaH(it, sivaSutra.yN)
   }
+  sivaSutra.Jl.each {
+    println it + ' -> ' + samjna.sthaneAntaratamaH(it, sivaSutra.js)
+  }
+
 }
 
 void runAllTests() {
@@ -333,9 +337,9 @@ void runAllTests() {
 //test_verse_quarters()
 //test_varnas_hk()
 //test_find_anga()
-//test_vyanjana_sandhi()
+test_vyanjana_sandhi()
 //test_pratyahara_dsl()
-test_sthaneantaratamah()
+//test_sthaneantaratamah()
 
 //runAllTests()
 

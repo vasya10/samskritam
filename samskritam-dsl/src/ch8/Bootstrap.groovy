@@ -39,6 +39,12 @@ ArrayList.metaClass.range = { first, last ->
 ArrayList.metaClass.replaceLast = { x -> delegate[delegate.size()-1] = x }
 
 /**
+ * @metamethod currently used for iko-yan-aci, but use sthAne antaratamaH
+ */
+ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }
+//ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }
+
+/**
  * @metamethod tokenize the script into individual varnas; each letter is a valid varna 
  * @closure @memoize
  * @given string any word or sentence 
@@ -346,4 +352,3 @@ String.metaClass.pada3 = { closurePada3(delegate.metre()) }
 String.metaClass.pada4 = { closurePada4(delegate.metre()) }
 
 
-ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }

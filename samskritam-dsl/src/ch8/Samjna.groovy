@@ -76,15 +76,14 @@ class Samjna {
   def upadhaa = { x -> def varnas = x.varnas(); varnas[varnas.size()-1] }
   
   //sandhi rules
-  Closure vidhiSutra = {sthana, adesha, condition, words ->
+  Closure vyanjanaSandhi = {sthana, adesha, condition, words ->
     def (purva, para) = words.tokenize()
     if (condition(para)) {
       List purvaVarnas = purva.varnas()
-      println "purvaVarnas: $purvaVarnas, sthana: $sthana, adesha: $adesha" 
       def k = sthana.substitute(adesha, purvaVarnas.last())
-      println "$purva is substituted by $k ... to get "
       List result = purvaVarnas.clone()
       result.replaceLast(k)
+      println "purva: $purvaVarnas, sthana: $sthana, adesha: $adesha, substituted by $k, purva: $result" 
       result.join() + para
     } else {
       words
@@ -93,19 +92,19 @@ class Samjna {
   
   //Given any value in sthana list, return a value from adesa list, which is found in the varna-category lists
   Closure sthaneAntaratamaH = { x, adesha ->
-    if (![x].disjoint(kanta)) return kanta.intersect(adesha)
-    if (![x].disjoint(taalu)) return taalu.intersect(adesha)
-    if (![x].disjoint(murdha)) return murdha.intersect(adesha)
-    if (![x].disjoint(danta)) return danta.intersect(adesha)
-    if (![x].disjoint(oshta)) return oshta.intersect(adesha)
-    if (![x].disjoint(dantoshtam)) return dantoshtam.intersect(adesha)
+    for (def phonemeSet : [kanta, taalu, murdha, danta, oshta, dantoshtam]) {
+      if (x in phonemeSet) return phonemeSet.intersect(adesha)
+    }
   }
   
   //when applying sandhi between two words, the next word must be supplied here
   def aci = { word -> word.varnas()[0].svara() }
   def Jsi = { word -> word.varnas()[0] in sivaSutra.Js }
+  def shcuna = { word -> word.varnas()[0] in ['s', 'c'] }
   
-  def eko_yaN_aci = vidhiSutra.curry(sivaSutra.ek, sivaSutra.yN, aci)
-  def JalAm_jas_Jase = vidhiSutra.curry(sivaSutra.Jl, sivaSutra.js, Jsi)
+  def eko_yaN_aci = vyanjanaSandhi.curry(sivaSutra.ek, sivaSutra.yN, aci)
+  def JalAm_jas_Jase = vyanjanaSandhi.curry(sivaSutra.Jl, sivaSutra.js, Jsi)
+  def eco_ayavaayaavaH = vyanjanaSandhi.curry(sivaSutra.'E.c', ['ay','av','Ay', 'Av'], aci)
+  def stoH_shcuna_schuH = vyanjanaSandhi.curry(['S'] + thu, ['s'] + cu , shcuna)
   
 }
