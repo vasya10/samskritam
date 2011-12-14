@@ -10,14 +10,14 @@ import java.util.List;
  */
 class NativeScriptScheme implements ScriptScheme {
 
-  static def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
-  static def Tokens = Definitions.Tokens
+  static def Script = new ConfigSlurper().parse(ch8.config.Script)
+  static def Tokens = Script.Tokens
 
-  static def Varnamala = Definitions.NativeScript.varnamala
-  static def Anunasika = Definitions.NativeScript.anunasika
-  static def Visarga = Definitions.NativeScript.visarga
-  static def Anusvara = Definitions.NativeScript.anusvara
-  static def unicodeMap = Definitions.UnicodeScript.varnamala
+  static def Varnamala = Script.NativeScript.varnamala
+  static def Anunasika = Script.NativeScript.anunasika
+  static def Visarga = Script.NativeScript.visarga
+  static def Anusvara = Script.NativeScript.anusvara
+  static def unicodeMap = Script.UnicodeScript.varnamala
 
   //hyphen denotes anunasika
   static List NotationMarkers = ['.', '-']
@@ -34,8 +34,23 @@ class NativeScriptScheme implements ScriptScheme {
     }
     def varnas = []
     def words = new StringTokenizer(text, Tokens.join(), true)
-    //def words = text.split(/(?=[ \|])(?<![ \|])|(?<=[ \|])(?![ \|])/)
     words.each { varnas.addAll( (it in Tokens) ? it : tokenizeWord(it)) }
+    varnas
+  }
+
+  protected List tokenizeWord(String word) {
+    def varnas = []
+    for (int i=0; i<word.length(); i++) {
+      def current = word[i] - Anunasika, next = ((i<word.length()-1) ? word[i+1] : '') //- Anunasika
+      if ((current+next) in Varnamala || next == '-') {
+        varnas << (current+next)
+        i++
+      } else if ((current) in Varnamala){
+        varnas << current
+      } else {
+        throw new Exception("** unknown varna ($current) in ($word) **")
+      }
+    }
     varnas
   }
 
@@ -61,7 +76,7 @@ class NativeScriptScheme implements ScriptScheme {
       }
     }
     if (syllable) syllables << syllable
-    syllables
+    syllables - ''
   }
 
   /**
@@ -102,28 +117,12 @@ class NativeScriptScheme implements ScriptScheme {
       } else if (current in Tokens) {
         result += current
       } else {
-        result += Definitions.UnicodeScript.findKey(current)
+        result += Script.UnicodeScript.findKey(current)
         if (vyanjana && !nextHalfStop) result += 'a'
         //println "adding ${u.key} to: $result"
       }
     }
     result
-  }
-
-  protected List tokenizeWord(String word) {
-    def varnas = []
-    for (int i=0; i<word.length(); i++) {
-      def current = word[i] - Anunasika, next = ((i<word.length()-1) ? word[i+1] : '') - Anunasika
-      if ((current+next) in Varnamala) {
-        varnas << (current+next)
-        i++
-      } else if ((current) in Varnamala){
-        varnas << current
-      } else {
-        throw new Exception("** unknown varna ($current) in ($word) **")
-      }
-    }
-    varnas
   }
 
   /**

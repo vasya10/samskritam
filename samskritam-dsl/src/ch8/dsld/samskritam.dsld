@@ -1,0 +1,27 @@
+// this is a DSLD file
+// start off creating a custom DSL Descriptor for your Groovy DSL
+
+// The following snippet adds the 'newProp' to all types that are a subtype of GroovyObjects
+// currentType(subType('groovy.lang.GroovyObject')).accept {
+//   property name : 'newProp', type : String, provider : 'Sample DSL', doc : 'This is a sample.  You should see this in content assist for GroovyObjects: <pre>newProp</pre>'
+// }
+
+package ch8.dsld
+
+import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.GenericsType;
+import org.codehaus.groovy.ast.FieldNode;
+
+import groovy.transform.IndexedProperty;
+
+/**
+ * This is the DSLD for samskritam-dsl
+ *
+ * @author vasu srinivasan
+ */
+ 
+ currentType( subType( String ) ).accept {
+   property name:"hk", type:"String", doc: """Indicates that the given string is in the Harvard-Kyoto transliteration scheme"""
+   property name:"pratyahara", type:"String", doc: """Pratyahara that belongs to the Mahesvara Sutrani"""
+   property name:"dhatu", type:"String", doc: """Verb root"""
+}

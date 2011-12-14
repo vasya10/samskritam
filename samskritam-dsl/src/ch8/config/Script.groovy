@@ -1,11 +1,9 @@
 package ch8.config
 
-import ch8.schemes.HKScriptScheme
-import ch8.schemes.NativeScriptScheme
+//import ch8.schemes.HKScriptScheme
+//import ch8.schemes.NativeScriptScheme
 
 Tokens = [' ', '|']
-Guru = '1'
-Laghu = '0'
 Avasanam = [' ', '|', '||'] //#() viramo avasaanam
 
 NativeScript {
@@ -16,7 +14,7 @@ NativeScript {
   candrabindu = 'M.'
   avagraha = 'a.'
   t = 't.'
-  scheme = new NativeScriptScheme()
+  //scheme = new NativeScriptScheme()
 }
 
 HKScript {
@@ -24,7 +22,7 @@ HKScript {
   anusvara = 'M'
   visarga = 'H'
   t = 't'
-  scheme = new HKScriptScheme()
+  //scheme = new HKScriptScheme()
 }
 
 UnicodeScript {
@@ -45,12 +43,3 @@ UnicodeScript {
   findKey = { value -> (UnicodeScript.varnamala.find { value in it.value }?.key)?:'' }
 }
 
-Gana {
-  name = ['N.a':'000','Sa':'001','ja':'010','ya':'011','Ba':'100','ra':'101','t.a':'110','ma':'111','ga':'1','la':'0']
-  GURU = '1'
-  LAGHU = '0'
-  
-  find { gana -> name[gana] }
-  findName = { metre-> Gana.name.find { it.value == metre }?.key } 
-  //ganaDefs.find{it.value ==  _value}?.key }
-}

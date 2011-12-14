@@ -2,11 +2,12 @@ package ch8.tests
 
 import java.nio.charset.Charset
 
-import ch8.config.Definitions
+import ch8.config.Script
 import ch8.schemes.NativeScriptScheme
 import ch8.util.UnicodeUtil
 
 evaluate(new File("ch8/Bootstrap.groovy"))
+ConfigSlurper Script = new ConfigSlurper().parse(ch8.config.Script)
 
 void testGuessEncoding() {
   File file = new File("c:/smartspace/test.txt")
@@ -49,9 +50,8 @@ void testReadWriteUnicodeFile() {
 }
 
 void testPrintUnicodeMap() {
-  ConfigSlurper Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
   
-  def unicodeMap = Definitions.UnicodeScript.varnamala
+  def unicodeMap = Script.UnicodeScript.varnamala
   unicodeMap.each {
     println it.key + "," + it.value
   }
@@ -71,22 +71,19 @@ void testUnicodeRange() {
 }
 
 void testFindUnicodeKey() {
-  def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
   def text = ['\u0915','\u093F','\u092E','\u0930','\u094D','\u0925','\u0902']
-  def unicodeMap = Definitions.UnicodeScript.varnamala
-  text.each { print Definitions.UnicodeScript.findKey(it) }
+  def unicodeMap = Script.UnicodeScript.varnamala
+  text.each { print Script.UnicodeScript.findKey(it) }
   println ""
 }
 
 void testUnicode2Native() {
-  def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
   def text = ['\u0915','\u093F','\u092E','\u0930','\u094D','\u0925','\u0902']
   println new NativeScriptScheme().fromUnicode(text)
 }
 
 void testNative2Unicode2Native() {
-  def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
-  def unicodeMap = Definitions.UnicodeScript.varnamala
+  def unicodeMap = Script.UnicodeScript.varnamala
   
   def original = 'suklAmbaraD.aram ves.Num sasevarNam cat.urBujam | prasaN.N.avad.aN.am D.yAyE.t. SarvaveGN.Opa sAN.t.ayE. ||'
   def fileName = "c:/smartspace/verse.txt"

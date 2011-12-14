@@ -1,5 +1,15 @@
 package ch8.config
 
+Gana {
+  name = ['N.a':'000','Sa':'001','ja':'010','ya':'011','Ba':'100','ra':'101','t.a':'110','ma':'111','ga':'1','la':'0']
+  GURU = '1'
+  LAGHU = '0'
+  
+  find { gana -> name[gana] }
+  findName = { metre-> Gana.name.find { it.value == metre }?.key }
+  //ganaDefs.find{it.value ==  _value}?.key }
+}
+
 kanya {
   chandas = ''
   name = 'kaN.yA'

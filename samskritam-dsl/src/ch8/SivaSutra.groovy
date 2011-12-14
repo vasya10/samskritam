@@ -42,8 +42,8 @@ class SivaSutra  {
   Iterator iterator() { list.iterator() }
 
   //eShaam antyaaH it
-  List itVarnas = table.collect { it.last() }
-
+  List itVarnas = table*.last()
+  
   /**
    * is this iT-marker?
    * this finds only 'pratyahara iT' is defined, for other it-s see ItRules.groovy
@@ -51,7 +51,7 @@ class SivaSutra  {
    * @see ItRules
    */
   boolean isIt(f) { itVarnas.contains(f + '!') }
-
+  
   /**
    * expands a given pratyahara, including all the iT-s
    * not for practical purposes, but good for testing
@@ -78,4 +78,5 @@ class SivaSutra  {
     def e = b<e1?e1:e2 
     list[b..e].collect { it.endsWith('!')?'':it } - ''
   }
+  
 }

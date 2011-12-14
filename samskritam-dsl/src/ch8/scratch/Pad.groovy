@@ -114,7 +114,7 @@ void testStringArithmetic() {
 }
 
 void testScriptDsl() {
-  use(ch8.schemes.Script) {
+  use(ch8.schemes.Dsl) {
     println '\u0915\u093F\u092E'.unicode
     println 'zuklAmbaradharam'.hk
   }

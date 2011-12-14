@@ -3,20 +3,19 @@ package ch8
 @Singleton
 class ItRules {
 
-  //#(1.3.2) upadeshe ajanunaasika iT, anunAsika-s are denoted by a "-" at the end,
-  //  may be M would be a better option?
-  Samjna samjna = Samjna.instance
-  def ajanunasika = samjna.svara.collect { it + "-" }
+  def akshara = new ConfigSlurper().parse(ch8.config.Akshara)
+
+  def ajanunasika = akshara.svara.collect { it + "-" }
 
   //cutU
-  def cu = samjna.cu
-  def tu = samjna.tu
+  def cu = akshara.cu
+  def tu = akshara.tu
 
   //s.asca, denoting as "sha" for convenience
   def sha = ['s.']
 
   //lashaku (ataddhite)
-  def lashaku = 'ls'.varnas() + samjna.ku
+  def lashaku = 'ls'.varnas() + akshara.ku
 
   //adirnitudavaH
   def adirnitudavaH = ['n.e','tu', 'du']
@@ -32,7 +31,7 @@ class ItRules {
 
   boolean itVarna(String varna) { varna in allItVarnas }
 
-  String tasyaLopah(String pratyaya) { (pratyaya.halantyam().varnas() - allItVarnas).join() }
+  String tasya_lopaH(String pratyaya) { (pratyaya.halantyam().varnas() - allItVarnas).join() }
   
   boolean isPit(String pratyaya) { 'p' in pratyaya.varnas() }
   boolean isKit(String pratyaya) { 'k' in pratyaya.varnas() }

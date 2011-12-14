@@ -2,17 +2,19 @@ package ch8.tests
 
 import ch8.ItRules
 import ch8.Samjna
+import ch8.Sandhi
 import ch8.SivaSutra
 import ch8.schemes.NativeScriptScheme
 import ch8.util.StopWatch
-import ch8.util.UnicodeUtil
 
 evaluate(new File("ch8/Bootstrap.groovy"))
+evaluate(new File("ch8/MetaFunctions.groovy"))
 
-def Vrutti = new ConfigSlurper().parse(ch8.config.Vrutti)
+vRtti = loadConfig(ch8.config.Vrutti)
+akshara = loadConfig(ch8.config.Akshara)
 
 examples = ['suklAmbaraD.araM', 'kr.s.Na:', 'kArt.SN.yam', 'vASud.Evad.vAd.asAks.aramaN.t.rAN.t.argat.a', 'kuruks.E.t.rE.', 
-            'Ad.esE.s.a', 'ad.rerAjaSut.At.majam','srEmad.ves.NvanGreN.es.Ta:','yamAt.ArAjaBAN.aSalagaM'
+            'Ad.esE.s.a', 'ad.rerAjaSut.At.majam','srEmad.ves.NvanGreN.es.Ta:','yamAt.ArAjaBAN.aSalagaM', 'kascet. kAN.t.a verahaguNa SvAD.ekArAt.pramat.t.a:'
            ]
 
 slokas = [ 'suklAmbaraD.aram ves.NuM sasevarNaM cat.urBujam | prasaN.N.avad.aN.am D.yAyE.t. SarvaveGN.Opa sAN.t.ayE. ||',
@@ -23,26 +25,31 @@ slokas = [ 'suklAmbaraD.aram ves.NuM sasevarNaM cat.urBujam | prasaN.N.avad.aN.a
 
 slokasHk = [ 'zuklAmbaradharam viSNum zazivarNam caturbhujam | prasannavadanam dhyAyet sarvavighnopa zAntaye ||']
 
-chandasDefs = [ Vrutti.kanya, Vrutti.pankti, Vrutti.tanumadhya ]
+chandasDefs = [ vRtti.kanya, vRtti.pankti, vRtti.tanumadhya ]
+
+void test_akshara() {
+  println akshara.svara
+  println akshara.ku
+  println akshara.allVarnas
+  println akshara.nAsikA
+  println akshara.sthAna
+  println akshara.Prayatna.vivRta  
+}
 
 void test_varnas() {
-  println '\n---- test_varnas ---- \n\n'
-  
-  Samjna samjna = Samjna.instance
-  println 'varnamala: ' + samjna.varnamala
-  println 'svara: ' + samjna.svara
+  println 'varnamala: ' + akshara.varnamala
+  println 'svara: ' + akshara.svara
   println 'SaMSkr.t.am'.varnas()
+  println 'nAsika: ' + akshara.nAsikA
   println slokas[0].varnas()
   
-  assert samjna.ku == ['k','K','g','G','n']
+  assert akshara.ku == ['k','K','g','G','n']
   assert 'lyut'.varnas() == ['l', 'y', 'u', 't']
   assert 'kr.s.Na:'.varnas() == ['k', 'r.', 's.', 'N', 'a', ':']
   assert 'SaMSkr.t.am'.varnas() == ['S', 'a', 'M', 'S', 'k', 'r.', 't.', 'a', 'm']
 }
 
 void test_sivasutra() {
-  println '\n---- test_sivasutra ---- \n\n'
-
   SivaSutra sivaSutra = SivaSutra.instance
 
   //print the maheshvara sutrani
@@ -81,17 +88,13 @@ void test_sivasutra() {
 }
 
 
-void test_hrasvAkshara() {
-  println '\n---- test_hrasvAkshara ---- \n\n'
-  
+void test_hrasva_akshara() {
   slokas[2].syllablize().each {
     println it + ' = ' + (it.hrasvakshara() ? 0 : 1)
   }  
 }
 
 void test_it_rules() {
-  println '\n---- test_it_rules ---- \n\n'
-
   ItRules itRules = ItRules.instance
 
   println itRules.ajanunasika //prints all the ac anunasikas
@@ -102,8 +105,6 @@ void test_it_rules() {
 
 
 void test_halantyam_rule() {
-  println '\n---- test_halantyam_rule ---- \n\n'
-  
   //print the pratyahara-s after the halantyam rule applied
   ['kt.va', 'Gan.', 'kt.vat.', 'sap', 'lyu-t', 'saN', 'sat.r.'].each { println it + ' = ' + it.halantyam() }
 
@@ -114,9 +115,7 @@ void test_halantyam_rule() {
 }
 
 void test_tasya_lopaH_rule() {
-  println '\n---- test_tasya_lopaH_rule ---- \n\n'
-  
-  ['Gan.', 'kt.vat.', 'sap', 'lyu-t', 'saN', 'satr.'].each { println it + ' = ' + it.tasyaLopah() }
+  ['Gan.', 'kt.vat.', 'sap', 'lyu-t', 'saN', 'sa-t.r.N.'].each { println it + ' = ' + it.varnas() + ' = ' + it.tasyaLopah() }
 
   //Asserts  
   assert 'a' == 'Gan.'.tasyaLopah()
@@ -125,23 +124,22 @@ void test_tasya_lopaH_rule() {
 }
 
 void test_samjna_sutras() {
-  println '\n---- testSamjnaSutras ---- \n\n'
-
   Samjna samjna = Samjna.instance
   
-  println samjna.allVarnas
-  println 'vruddhi: ' + samjna.vruddhi
-  println 'guna: ' + samjna.guna
+  println 'vruddhi: ' + samjna.vRddhi
+  println 'guna: ' + samjna.guNa
   println 'all consonants: ' + samjna.hal
-
-  //Asserts  
-  assert ['A', 'I', 'O.'] == samjna.vruddhi
-  assert ['a', 'E.', 'O'] == samjna.guna
+  println 'upadhA of yak: ' + samjna.upadhA('yak')
   
+  //Asserts  
+  assert ['A', 'I', 'O.'] == samjna.vRddhi
+  assert ['a', 'E.', 'O'] == samjna.guNa
+  assert ['E', 'U', 'E.'] == samjna.pragRhyam
+  assert 'u' == samjna.anga('t.aN.up')
+  assert 'k' == samjna.upadhA('yak')
 }
 
 void test_ends_with_svara() {
-  println '\n---- test_ends_with_svara ---- \n\n'
   def example = ['a', 'E', 't.at.', 'kam', 'Barat.', 'nadE', 'svara']
   
   example.each { println it + ' = ' + it.endsWithSvara() }
@@ -149,51 +147,39 @@ void test_ends_with_svara() {
 }
 
 void test_string_direct_iterator() {
-  println '\n---- test_string_iterator ---- \n\n'
-  
   examples.each { example -> example.each { print it + ',' } }
 }
 
-void test_samyuktAkshara() {
-  println '\n---- test_samyktAkshara ---- \n\n'
-  
+void test_samyukta_akshara() {
   slokas.each { it.tokenize().each { it.syllablize().each { println it + ' = ' + it.samyuktakshara() } } }
 }
 
 void test_syllablize_word() {
-  println '\n---- test_syllablize_word ---- \n\n'
-  examples.each { println it + ' = ' + new NativeScriptScheme().syllablize(it) }
+  [slokas[0]].each { println it + ' = ' + new NativeScriptScheme().syllablize(it) }
  
   //Asserts  
   assert ['su', 'klA', 'mba', 'ra', 'D.a', 'ram'] == new NativeScriptScheme().syllablize('suklAmbaraD.aram')
 }
 
 void performance_test_syllablize_sloka() {
-  println '\n---- performance_test_syllablize_sloka ---- \n\n'
-  
   slokas.each { println it.syllablize() }
 }
 
 void test_sloka_size() {
-  println '\n---- test_sloka_size ---- \n\n'
-  
-  slokas.each { println it + ' = ' + it.syllableLength() }
+  slokas.each { println it + ' = ' + it.syllablize() + ' = ' + it.syllableLength() }
   assert slokas.collect { it.syllableLength() } == [32, 32, 76, 56]
 }
 
 void test_native_to_unicode() {
-  println '\n---- test_native_to_unicode ---- \n\n'
-  
   slokas.each { 
     println it + '<br/>' + it.unicode() + '<br/><br/>'
   }
+  
   //Asserts  
   assert 'suklAmbaraD.araM'.unicode() == '\u0936\u0941\u0915\u094D\u0932\u093E\u092E\u094D\u092C\u0930\u0927\u0930\u0902'
 }
 
 void test_sloka_chandas() {
-  println '\n---- test_sloka_chandas ---- \n\n'
-  
   slokas.each { verse->
     def syllables = verse.syllablize()
     def metre = verse.metre()
@@ -214,13 +200,11 @@ void test_sloka_chandas() {
 }
 
 void test_chandas_defs() {
-  println '\n---- test_chandas_defs ---- \n\n'
-  
   chandasDefs.each { c ->
-    def syllables = c.definition.syllablize()
-    def metre = c.definition.metre() //list of 1s, 0s
-    def gana = metre.join().metreAsGroup().gana()
-    def originalGana = c.definition.gana().syllablize()
+    List syllables = c.definition.syllablize()
+    List metre = c.definition.metre() //list of 1s, 0s
+    List gana = metre.join().metreAsGroup().gana()
+    List originalGana = c.definition.gana() //.syllablize()
     
     println "\n\n verifying ${c.name}"
     println "syllables = $syllables = (${syllables.size()})"
@@ -239,8 +223,6 @@ void test_chandas_defs() {
 }
 
 void test_verse_quarters() {
-  println '\n---- test_verse_quarters ---- \n\n'
-  
   slokas.each { sloka ->
     println sloka.syllablize()
     println sloka.gana()
@@ -250,10 +232,8 @@ void test_verse_quarters() {
 }
 
 void test_varnas_hk() {
-  println '\n---- test_varnas_HK ---- \n\n'
-  
   //DSL !!!
-  use(ch8.schemes.Script) {
+  use(ch8.schemes.Dsl) {
     println 'saMskRtam'.hk
     println slokasHk[0].hk
     assert 'lyuT'.hk == ['l', 'y', 'u', 'T']
@@ -269,58 +249,70 @@ void test_find_anga() {
   text.each { println anga(it) }
 }
 
-void test_vyanjana_sandhi() {
-  Samjna samjna = Samjna.instance
+void test_purvarupa_sandhi() {
+  Sandhi sandhi = Sandhi.instance
   SivaSutra sivaSutra = SivaSutra.instance
   
-  println samjna.eko_yaN_aci('et.e ape')
-  println samjna.JalAm_jas_Jase('ap D.e')
-  println samjna.eco_ayavaayaavaH('cE. anam')
-  println samjna.eco_ayavaayaavaH('cI aka')
-  println samjna.eco_ayavaayaavaH('lO. aka')
-  println samjna.stoH_shcuna_schuH('vr.ks.aS sE.t.E.')
-  println samjna.stoH_shcuna_schuH('vr.ks.aS ceN.Ot.e')
-  println samjna.stoH_shcuna_schuH('agnecet. sE.t.E.')
-  println samjna.stoH_shcuna_schuH('agnecet. ceN.Ot.e')
+  println sandhi.iko_yaN_aci('et.e ape')
+  println sandhi.jhalAm_jaz_jhazi('ap D.e')
+  println sandhi.eco_ayavaayaavaH('cE. anam')
+  println sandhi.eco_ayavaayaavaH('cI aka')
+  println sandhi.eco_ayavaayaavaH('lO. aka')
+  println sandhi.stoH_zcuna_zcuH('vr.ks.aS sE.t.E.')
+  println sandhi.stoH_zcuna_zcuH('vr.ks.aS ceN.Ot.e')
+  println sandhi.stoH_zcuna_zcuH('agnecet. sE.t.E.')
+  println sandhi.stoH_zcuna_zcuH('agnecet. ceN.Ot.e')
   
-  assert samjna.eco_ayavaayaavaH('lO anam') == 'lavanam'
-  assert samjna.eco_ayavaayaavaH('cI aka') == 'cAyaka'
-  assert samjna.eco_ayavaayaavaH('lO. aka') == 'lAvaka'
+  assert sandhi.iko_yaN_aci('et.e ape') == 'et.yape'
+  assert sandhi.eco_ayavaayaavaH('lO anam') == 'lavanam'
+  assert sandhi.eco_ayavaayaavaH('cI aka') == 'cAyaka'
+  assert sandhi.eco_ayavaayaavaH('lO. aka') == 'lAvaka'
+  assert sandhi.eco_ayavaayaavaH('N.O. avat.u') == 'N.Avavat.u'
   
   //assert samjna.JalAm_jas_Jase('ap D.e') == 'abD.e'
 }
 
-void test_pratyahara_dsl() {
-  use(ch8.schemes.Script) {
-    println 'cr'.pratyahara
-    println SivaSutra.instance.cr
-    assert 'cr'.pratyahara == SivaSutra.instance.cr 
-  }
-}
-
-void test_sthaneantaratamah() {
+void test_sthAne_antaratamaH() {
   SivaSutra sivaSutra = SivaSutra.instance
-  Samjna samjna = Samjna.instance
+  Sandhi sandhi = Sandhi.instance
   
   sivaSutra.ek.each {
-    println it + ' -> ' + samjna.sthaneAntaratamaH(it, sivaSutra.yN)
+    println it + ' -> ' + sandhi.sthAne_antaratamaH(it, sivaSutra.yN)
   }
   sivaSutra.Jl.each {
-    println it + ' -> ' + samjna.sthaneAntaratamaH(it, sivaSutra.js)
+    println it + ' -> ' + sandhi.sthAne_antaratamaH(it, sivaSutra.js)
   }
 
+}
+
+void test_pratyahara_dsl() {
+  use(ch8.schemes.Dsl) {
+    println 'cr'.pratyahara
+    assert 'cr'.pratyahara == SivaSutra.instance.cr 
+    
+    println 'bhU'.dhatu
+  }
 }
 
 void runAllTests() {
-  java.lang.reflect.Method[] m = this.getClass().getMethods().collect { it.name.startsWith('test') ? it : ''} - '' 
+  java.lang.reflect.Method[] m = this.getClass().getMethods().collect { it.name.startsWith('test_') ? it : ''} - '' 
   m.each { this.invokeMethod(it.name, [] as Object[]) }
 }
 
-//StopWatch.start()
+@Override
+public Object invokeMethod(String name, Object args) {
+  System.out.println ("\n----- $name ------ \n")
+  return super.invokeMethod(name, args)
+}
 
+StopWatch.start()
+
+//runAllTests()
+
+//test_akshara()
 //test_varnas()
 //test_sivasutra()
-//test_hrasvAkshara()
+//test_hrasva_akshara()
 //test_it_rules()
 //test_halantyam_rule()
 //test_tasya_lopaH_rule()
@@ -337,11 +329,8 @@ void runAllTests() {
 //test_verse_quarters()
 //test_varnas_hk()
 //test_find_anga()
-test_vyanjana_sandhi()
+//test_purvarupa_sandhi()
+test_sthAne_antaratamaH()
 //test_pratyahara_dsl()
-//test_sthaneantaratamah()
 
-//runAllTests()
-
-//println StopWatch.stop()
-
+println StopWatch.stop()

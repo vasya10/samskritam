@@ -2,7 +2,7 @@ package ch8.schemes
 
 class Transliterator {
 
-  static def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
+  static def Script = new ConfigSlurper().parse(ch8.config.Script)
   /**
    * @closure maps any script to any other script, works only for 1:1 mapping
    */
@@ -13,6 +13,6 @@ class Transliterator {
    */
   static def transliterate = { text, fromScript, toScript -> text.varnas(fromScript.scheme).collect { scriptMapper.call(it, fromScript, toScript) } }
 
-  static def nativeToHk = transliterate.rcurry(Definitions.NativeScript, Definitions.HKScript)
-  static def hkToNative = transliterate.rcurry(Definitions.HKScript, Definitions.NativeScript)
+  static def nativeToHk = transliterate.rcurry(Script.NativeScript, Script.HKScript)
+  static def hkToNative = transliterate.rcurry(Script.HKScript, Script.NativeScript)
 }

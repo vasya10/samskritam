@@ -9,9 +9,9 @@ import java.util.List
  */
 class HKScriptScheme implements ScriptScheme {
 
-  static def Definitions = new ConfigSlurper().parse(ch8.config.Definitions)
-  static def Tokens = Definitions.Tokens
-  static def Varnamala = Definitions.HKScript.varnamala
+  static def Script = new ConfigSlurper().parse(ch8.config.Script)
+  static def Tokens = Script.Tokens
+  static def Varnamala = Script.HKScript.varnamala
   
   @Override
   public List tokenize(def text) {
