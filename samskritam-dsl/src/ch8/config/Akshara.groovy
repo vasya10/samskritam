@@ -2,6 +2,7 @@ package ch8.config
 
 import java.util.List;
 
+//using Bootstrap for list metaclass methods like range
 evaluate(new File("ch8/Bootstrap.groovy"))
 
 script = loadConfig(ch8.config.Script) 
@@ -31,6 +32,8 @@ allVarnas = varnamala.range('a','OM')
 dIrgha = ['A','E','U','R.','E.','I','O','O.','M',':'] //'AEUR.E.IOO.M:'.varnas()
 hrasva = svara - dIrgha
 
+hrasva_dIrgha_map = ['a':'A', 'e':'E', 'u':'U', 'r.':'R.']
+
 /** sthAna */
 
 //a-ku-ha-visarjaniyaanaam kantaH
@@ -59,23 +62,27 @@ jihvAmula = ['']
 
 sthAna = [kaNTha, tAlu, mUrdha, danta, oSTha, nAsikA, kaNTha_tAlu, kaNTha_OSTham, dantoSTham, jihvAmula]
 
-prayatna {
-  //aabhyantara_prayatna [saMvRta,vivRta, iizad_vivRta, spRSTa, iizad_spRSTa
-  samvRta = ['a']
-  //#(8.last) 
-  vivRta = varnamala.range('a', 'O.')
-  sparza = varnamala.range('k', 'm')
-  iizad_spRSTa = varnamala.range('y','h')
-  iiSad_vivRta = varnamala.range('y','h')
-  
-  //baahya prayatna
-  //[samvAra, vivAra, svAra, nAda, ghoSa, agoSa, alpaprANa, mahAprANa, udAtta, anudAtta, svarita]
-  samvAra = []
-  vivAra = []
-  zvAsa = []
-  nAda = []
-  goSa = []
-  agoSa = []
-  alpaprANa = ['k','g','c','j','t','d','t.','d.','p','b']
-  mahaprANa = ['K','G','C','J','T','D','T.','D.','P','B']
-}
+//aabhyantara prayatna
+samvRta = ['a']
+//#A(a a |) - include a in the vivRta 
+vivRta = varnamala.range('a', 'O.')
+iiSad_vivRta = varnamala.range('y','h')
+spRSTa = varnamala.range('k', 'm')
+iizad_spRSTa = varnamala.range('y','h')
+
+//baahya prayatna
+samvAra = []
+vivAra = []
+zvAsa = []
+nAda = []
+goSa = []
+agoSa = []
+alpaprANa = ['k','g','c','j','t','d','t.','d.','p','b']
+mahaprANa = ['K','G','C','J','T','D','T.','D.','P','B']
+
+aabhyantara_prayatna = [vivRta, iiSad_vivRta, spRSTa, iizad_spRSTa, samvRta]
+baahya_prayatna = [samvAra, vivAra, zvAsa, nAda, goSa, agoSa, alpaprANa, mahAprAna]
+
+prayatna = [aabhyantara_prayatna, baahya_prayatna]
+
+

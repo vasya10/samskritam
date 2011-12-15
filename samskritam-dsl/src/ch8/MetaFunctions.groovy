@@ -346,3 +346,7 @@ String.metaClass.pada1 = { closurePada1(delegate.metre()) }
 String.metaClass.pada2 = { closurePada2(delegate.metre()) }
 String.metaClass.pada3 = { closurePada3(delegate.metre()) }
 String.metaClass.pada4 = { closurePada4(delegate.metre()) }
+
+
+String.metaClass.replaceFirst = { x -> delegate.varnas().clone().replaceFirst(x).join() }
+String.metaClass.replaceLast = { x -> delegate.varnas().clone().replaceLast(x).join() }

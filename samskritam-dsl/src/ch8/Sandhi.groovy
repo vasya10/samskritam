@@ -9,62 +9,89 @@ class Sandhi {
   SivaSutra sivaSutra = SivaSutra.instance
   Samjna samjna = Samjna.instance
   
-  //sandhi rules
-  Closure purvaRupaSandhi = {sthAna, adesha, condition, words ->
-    def (purva, para) = words.tokenize()
+  Closure purvaRupaSandhi = {sthAna, adesha, condition, purva, para ->
+    def original_purva = purva
     if (condition(para)) {
-      List purvaVarnas = purva.varnas()
-      def k = sthAna.substitute(adesha, purvaVarnas.last())
-      List result = purvaVarnas.clone()
-      result.replaceLast(k)
-      println "purva: $purvaVarnas, sthana: $sthAna, adesha: $adesha, substituted by $k, purva: $result"
-      result.join() + para
-    } else {
-      words
+      purva = sthAna.substitute(adesha, purva)
+      println "sthana: $sthAna, adesha: $adesha, original: $original_purva, new: $purva"
     }
+    [purva, para]
   }
 
-  //Given any value in sthana list, return a value from adesa list, which is found in the varna-category lists
-  //#()
-  Closure sthAne_antaratamaH = { x, aadeza ->
+  //Find the aadeza-varNa within the sthANa of the given varNa
+  //#(sthAne antaratamaH |)
+  //TODO Currently not being used, need to understand this better; esp kaNTha + OSTha should return varna from kaNThOSTham
+  Closure sthAne_antaratamaH = { varNa, aadeza ->
     for (def s : akshara.sthAna) {
-      if (x in s) return s.intersect(aadeza)
+      if (varNa in s) return s.intersect(aadeza)
     }
   }
+  
+  /**
+   * if two similar svarA-s, lengthen the svara
+   */
+  Closure akaH_savarNe_dIrghaH = { purva, para -> 
+    def result = []
+    if (samjna.savarNam(purva, para)) {
+      result = [akshara.hrasva_dIrgha_map[purva]?:purva,'']
+    }
+    result
+  }
 
-  //when applying sandhi between two words, the next word must be supplied here
-  def aci = { word -> word.varnas()[0].svara() }
-  def jhazi = { word -> word.varnas()[0] in sivaSutra.Js }
-  def zcuna = { word -> word.varnas()[0] in ['s'] + akshara.cu}
-  def STunA = { word -> word.varnas()[0] in ['s.'] + akshara.thu }
+  Closure aad_guNaH = { x, y ->
+    def guna = ['a','e','u'].substitute(samjna.guNaH, x.toLowerCase())
+    [guna?:x, null]
+  }
+  
+  def aci = { it.svara() } 
+  def jhazi = { it in sivaSutra.Js }
+  def zcuna = { it in ['s'] + akshara.cu}
+  def STunA = { it in ['s.'] + akshara.thu }
 
-  //#(6.1.78)
+  //#A(6.1.78)
   def iko_yaN_aci = purvaRupaSandhi.curry(sivaSutra.ek, sivaSutra.yN, aci)
+  //#A()
   def jhalAm_jaz_jhazi = purvaRupaSandhi.curry(sivaSutra.Jl, sivaSutra.js, jhazi)
-  //#(6.1.79)
+  //#A(6.1.79)
   def eco_ayavaayaavaH = purvaRupaSandhi.curry(sivaSutra.'E.c', ['ay', 'av', 'Ay', 'Av'], aci)
+  //#A()
   def stoH_zcuna_zcuH = purvaRupaSandhi.curry(['S']+ akshara.thu, ['s']+ akshara.cu , zcuna)
+  //#A()
   def stoH_STunA_STuH = purvaRupaSandhi.curry(['S'] + akshara.thu, ['s.'] + akshara.thu, STunA)
 
-  def aat_guNaH = {}
+  //generic method - application of any sandhi rule
+  def apply = { word, vidhiSutra ->
+    if (!word) return '' 
+    if (!vidhiSutra) return 'invalid rule'
+    def words = word.tokenize()
+    if (words.size()<2) return word
+    def (purva, para) = [words[0].varnas().last(), words[1].varnas().first()]
+    (purva, para) = vidhiSutra.call(purva, para)
+    //check specifically for null, because '' means delete and empty string is false in Groovy Truth
+    if (purva != null) words[0] = words[0].replaceLast(purva)
+    if (para != null) words[1] = words[1].replaceFirst(para)
+    //TODO Kludgy, but works - if a sandhi happened, join the words, if not keep them separate
+    (purva != null && para != null) ? words[0] + words[1] : words[0] + ' ' + words[1]  
+  }
   
-  def aasya = { varna1, varna2 ->  
-    for (def p : akshara.sthAna)  {
-      //aasya
-      if (varna1 in p && varna2 in p) return true
+  /**
+   * @given split a word and auto apply sandhi
+   */
+  def auto = { text ->
+    def words = text.tokenize()
+    def (purva, para) = [words[0].varnas().last(), words[1].varnas().first()]
+    
+    def sandhiRule
+    if (samjna.savarNam(purva, para)) {
+      sandhiRule = akaH_savarNe_dIrghaH
+      text = apply(text, sandhiRule)
+    } else if (aci(para)){
+      if (purva in sivaSutra.ek) { sandhiRule = iko_yaN_aci; text = apply(text, sandhiRule) } 
+      if (purva.svara()) { sandhiRule = aad_guNaH; text = apply(text, sandhiRule) } 
+      if (purva in sivaSutra.'E.c') { sandhiRule =  eco_ayavaayaavaH; text = apply(text, sandhiRule) } 
     }
-    false
+    
+    text
   }
   
-  def prayatna = { varna1, varana2 ->
-    
-  }
-
-  def savarNa = { v1, v2 -> aasya(v1) == aasya(v2) && prayatna(v1) == prayatna(v2) }
-    
-  def akaH_savarNe_dIrghaH = { words -> 
-    if (savarNa(v1, v2)) {
-      //modify
-    }  
-  }
 }

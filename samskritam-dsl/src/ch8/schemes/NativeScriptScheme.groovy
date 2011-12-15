@@ -10,14 +10,14 @@ import java.util.List;
  */
 class NativeScriptScheme implements ScriptScheme {
 
-  static def Script = new ConfigSlurper().parse(ch8.config.Script)
-  static def Tokens = Script.Tokens
+  static def script = new ConfigSlurper().parse(ch8.config.Script)
+  static def tokens = script.Tokens
 
-  static def Varnamala = Script.NativeScript.varnamala
-  static def Anunasika = Script.NativeScript.anunasika
-  static def Visarga = Script.NativeScript.visarga
-  static def Anusvara = Script.NativeScript.anusvara
-  static def unicodeMap = Script.UnicodeScript.varnamala
+  static def varNamAlA = script.NativeScript.varnamala
+  static def anunAsikA = script.NativeScript.anunasika
+  static def visarga = script.NativeScript.visarga
+  static def anusvara = script.NativeScript.anusvara
+  static def unicodeMap = script.UnicodeScript.varnamala
 
   //hyphen denotes anunasika
   static List NotationMarkers = ['.', '-']
@@ -33,19 +33,29 @@ class NativeScriptScheme implements ScriptScheme {
       text = text.join()
     }
     def varnas = []
-    def words = new StringTokenizer(text, Tokens.join(), true)
-    words.each { varnas.addAll( (it in Tokens) ? it : tokenizeWord(it)) }
+    def words = new StringTokenizer(text, tokens.join(), true)
+    words.each { varnas.addAll( (it in tokens) ? it : tokenizeWord(it)) }
     varnas
   }
 
+  /**
+   * tokenizes a given word into a list of varnas
+   * the word could be a pada, shabda, pratyaya or pratyahara
+   *
+   * @calledby String.metaClass.varnas()
+   * @calledby String.metaClass.iterator
+   * @param word
+   * @return list of varnas
+   * @throws Exception if an unknown varna is encountered
+   */
   protected List tokenizeWord(String word) {
     def varnas = []
     for (int i=0; i<word.length(); i++) {
-      def current = word[i] - Anunasika, next = ((i<word.length()-1) ? word[i+1] : '') //- Anunasika
-      if ((current+next) in Varnamala || next == '-') {
+      def current = word[i] - anunAsikA, next = ((i<word.length()-1) ? word[i+1] : '') //- Anunasika
+      if ((current+next) in varNamAlA || next == '-') {
         varnas << (current+next)
         i++
-      } else if ((current) in Varnamala){
+      } else if ((current) in varNamAlA){
         varnas << current
       } else {
         throw new Exception("** unknown varna ($current) in ($word) **")
@@ -59,11 +69,11 @@ class NativeScriptScheme implements ScriptScheme {
     def syllables = []
     def syllable = ''
 
-    def v = sentence.varnas() - Tokens
+    def v = sentence.varnas() - tokens
     for (int i=0; i<v.size(); i++) {
       def (prev, current, next) = v.triplet(i)
 
-      if (current == Visarga || current == Anusvara) {
+      if (current == visarga || current == anusvara) {
         syllable += current
         syllables << syllable
         syllable = ''
@@ -88,11 +98,36 @@ class NativeScriptScheme implements ScriptScheme {
   @Override
   public String toUnicode(String text) {
     def unicodeList = []
-    def words = new StringTokenizer(text, Tokens.join(), true)
-    words.each { unicodeList.addAll( (it in Tokens) ? it : toUnicodeWord(it)) }
+    def words = new StringTokenizer(text, tokens.join(), true)
+    words.each { unicodeList.addAll( (it in tokens) ? it : toUnicodeWord(it)) }
     //println "unicodelist : " + unicodeList
     unicodeList.join()
   }
+
+  /**
+  * converts a word from NativeScript to Unicode
+  * @param word
+  * @return
+  */
+ protected List toUnicodeWord(def word) {
+   def unicodeList = []
+   def v = word.varnas()
+
+   for (int i=0; i<=v.size()-1; i++) {
+     def (prev, current, next) = v.triplet(i)
+     def halfCode = unicodeMap[current][0]
+     def fullCode = unicodeMap[current][1]
+
+     //println "$prev, $current, $next; $halfCode, $fullCode"
+     if (current.svara() && prev?.hal()) {
+       if (halfCode) unicodeList << halfCode
+     } else {
+       unicodeList << fullCode
+       if (current.hal() && (!next || next?.hal())) unicodeList << halfCode
+     }
+   }
+   unicodeList
+ }
 
   /**
    * converts from unicode to native script
@@ -114,10 +149,10 @@ class NativeScriptScheme implements ScriptScheme {
 
       if (halfStopVyanjana) {
         //skip; do nothing
-      } else if (current in Tokens) {
+      } else if (current in tokens) {
         result += current
       } else {
-        result += Script.UnicodeScript.findKey(current)
+        result += script.UnicodeScript.findKey(current)
         if (vyanjana && !nextHalfStop) result += 'a'
         //println "adding ${u.key} to: $result"
       }
@@ -125,58 +160,9 @@ class NativeScriptScheme implements ScriptScheme {
     result
   }
 
-  /**
-   * tokenizes a given word into a list of varnas
-   * the word could be a pada, shabda, pratyaya or pratyahara
-   * TODO needs to handle anunasika (third letter)
-   *
-   * @calledby String.metaClass.varnas()
-   * @calledby String.metaClass.iterator
-   * @param word
-   * @return list of varnas
-   * @throws Exception if an unknown varna is encountered
-   */
-  protected List tokenizeWord2(String word) {
-    def varnas = []
-    for (int i=0; i<word.length(); i++) {
-      def current = word[i], next = (i<word.length()-1) ? word[i+1] : ''
-      if (current in NotationMarkers) continue
-      current = (next in NotationMarkers) ? current+next : current
-      if (!((current - Anunasika) in Varnamala)) {
-        throw new Exception("** unknown varna ($current) in ($word) **")
-      }
-      varnas << current
-    }
-    varnas
-  }
-
+  //TODO Not working
   public String toUnicodeHtml(String text) {
-    toUnicode(text).collect { it in Tokens ? it : '&#x' + it + ';' }.join()
-  }
-
-  /**
-   * converts a word from NativeScript to Unicode
-   * @param word
-   * @return
-   */
-  protected List toUnicodeWord(def word) {
-    def unicodeList = []
-    def v = word.varnas()
-
-    for (int i=0; i<=v.size()-1; i++) {
-      def (prev, current, next) = v.triplet(i)
-      def halfCode = unicodeMap[current][0]
-      def fullCode = unicodeMap[current][1]
-
-      //println "$prev, $current, $next; $halfCode, $fullCode"
-      if (current.svara() && prev?.hal()) {
-        if (halfCode) unicodeList << halfCode
-      } else {
-        unicodeList << fullCode
-        if (current.hal() && (!next || next?.hal())) unicodeList << halfCode
-      }
-    }
-    unicodeList
+    toUnicode(text).collect { it in tokens ? it : '&#x' + it + ';' }.join()
   }
 
 }

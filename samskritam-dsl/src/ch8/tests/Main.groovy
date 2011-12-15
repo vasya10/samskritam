@@ -10,22 +10,28 @@ import ch8.util.StopWatch
 evaluate(new File("ch8/Bootstrap.groovy"))
 evaluate(new File("ch8/MetaFunctions.groovy"))
 
-vRtti = loadConfig(ch8.config.Vrutti)
 akshara = loadConfig(ch8.config.Akshara)
+vRtti = loadConfig(ch8.config.Vrutti)
 
-examples = ['suklAmbaraD.araM', 'kr.s.Na:', 'kArt.SN.yam', 'vASud.Evad.vAd.asAks.aramaN.t.rAN.t.argat.a', 'kuruks.E.t.rE.', 
-            'Ad.esE.s.a', 'ad.rerAjaSut.At.majam','srEmad.ves.NvanGreN.es.Ta:','yamAt.ArAjaBAN.aSalagaM', 'kascet. kAN.t.a verahaguNa SvAD.ekArAt.pramat.t.a:'
-           ]
+sivaSutra = SivaSutra.instance
+itRules = ItRules.instance
+samjna = Samjna.instance
+sandhi = Sandhi.instance
+
+examples = ['suklAmbaraD.araM', 'kr.s.Na:', 'kArt.SN.yam', 'vASud.Evad.vAd.asAks.aramaN.t.rAN.t.argat.a', 'kuruks.E.t.rE.',
+  'Ad.esE.s.a', 'ad.rerAjaSut.At.majam','srEmad.ves.NvanGreN.es.Ta:','yamAt.ArAjaBAN.aSalagaM', 'kascet. kAN.t.a verahaguNa SvAD.ekArAt.pramat.t.a:'
+ ]
 
 slokas = [ 'suklAmbaraD.aram ves.NuM sasevarNaM cat.urBujam | prasaN.N.avad.aN.am D.yAyE.t. SarvaveGN.Opa sAN.t.ayE. ||',
-           'vyASam vaSes.Ta N.aPt.Aram sakt.E.: pO.t.ram akalmas.am | parASarAt.majam vaN.d.E. sukat.At.am t.apON.N.eD.em ||',
-           'yA kuN.d.E.N.d.u t.us.Ara hAraD.avalA yA suBravaSt.rAvr.t.A | yA vENAvara d.aNdamaNdet.akarA yA svE.t.a pad.mASaN.A | yA brahmAcyut.a sankarA praBr.t.eBerd.E.vI: Sad.A vaN.d.et.A | SA mAM pAt.u SaraSvat.E Bagavat.E N.essE.s.a jAdyApahA ||',
-           'rAmAya sAsvat.a SuveSt.r.t.a s.adguNAya SarvE.svarAya balavErya mahArNavAya | N.atvA lelangayes.u arNavam utpapAta Nes.pEdya t.am gerevaram pavaN.asya SUN.u:'
-         ]
+ 'vyASam vaSes.Ta N.aPt.Aram sakt.E.: pO.t.ram akalmas.am | parASarAt.majam vaN.d.E. sukat.At.am t.apON.N.eD.em ||',
+ 'yA kuN.d.E.N.d.u t.us.Ara hAraD.avalA yA suBravaSt.rAvr.t.A | yA vENAvara d.aNdamaNdet.akarA yA svE.t.a pad.mASaN.A | yA brahmAcyut.a sankarA praBr.t.eBerd.E.vI: Sad.A vaN.d.et.A | SA mAM pAt.u SaraSvat.E Bagavat.E N.essE.s.a jAdyApahA ||',
+ 'rAmAya sAsvat.a SuveSt.r.t.a s.adguNAya SarvE.svarAya balavErya mahArNavAya | N.atvA lelangayes.u arNavam utpapAta Nes.pEdya t.am gerevaram pavaN.asya SUN.u:'
+]
 
 slokasHk = [ 'zuklAmbaradharam viSNum zazivarNam caturbhujam | prasannavadanam dhyAyet sarvavighnopa zAntaye ||']
 
 chandasDefs = [ vRtti.kanya, vRtti.pankti, vRtti.tanumadhya ]
+
 
 void test_akshara() {
   println akshara.svara
@@ -50,8 +56,6 @@ void test_varnas() {
 }
 
 void test_sivasutra() {
-  SivaSutra sivaSutra = SivaSutra.instance
-
   //print the maheshvara sutrani
   println 'SivaSutra table-format:'
   sivaSutra.table.each { println it } 
@@ -95,8 +99,6 @@ void test_hrasva_akshara() {
 }
 
 void test_it_rules() {
-  ItRules itRules = ItRules.instance
-
   println itRules.ajanunasika //prints all the ac anunasikas
   println itRules.cu
   println itRules.tu
@@ -124,8 +126,6 @@ void test_tasya_lopaH_rule() {
 }
 
 void test_samjna_sutras() {
-  Samjna samjna = Samjna.instance
-  
   println 'vruddhi: ' + samjna.vRddhi
   println 'guna: ' + samjna.guNa
   println 'all consonants: ' + samjna.hal
@@ -249,50 +249,65 @@ void test_find_anga() {
   text.each { println anga(it) }
 }
 
-void test_purvarupa_sandhi() {
-  Sandhi sandhi = Sandhi.instance
-  SivaSutra sivaSutra = SivaSutra.instance
-  
-  println sandhi.iko_yaN_aci('et.e ape')
-  println sandhi.jhalAm_jaz_jhazi('ap D.e')
-  println sandhi.eco_ayavaayaavaH('cE. anam')
-  println sandhi.eco_ayavaayaavaH('cI aka')
-  println sandhi.eco_ayavaayaavaH('lO. aka')
-  println sandhi.stoH_zcuna_zcuH('vr.ks.aS sE.t.E.')
-  println sandhi.stoH_zcuna_zcuH('vr.ks.aS ceN.Ot.e')
-  println sandhi.stoH_zcuna_zcuH('agnecet. sE.t.E.')
-  println sandhi.stoH_zcuna_zcuH('agnecet. ceN.Ot.e')
-  
-  assert sandhi.iko_yaN_aci('et.e ape') == 'et.yape'
-  assert sandhi.eco_ayavaayaavaH('lO anam') == 'lavanam'
-  assert sandhi.eco_ayavaayaavaH('cI aka') == 'cAyaka'
-  assert sandhi.eco_ayavaayaavaH('lO. aka') == 'lAvaka'
-  assert sandhi.eco_ayavaayaavaH('N.O. avat.u') == 'N.Avavat.u'
-  
-  //assert samjna.JalAm_jas_Jase('ap D.e') == 'abD.e'
-}
-
 void test_sthAne_antaratamaH() {
-  SivaSutra sivaSutra = SivaSutra.instance
-  Sandhi sandhi = Sandhi.instance
-  
   sivaSutra.ek.each {
     println it + ' -> ' + sandhi.sthAne_antaratamaH(it, sivaSutra.yN)
   }
   sivaSutra.Jl.each {
     println it + ' -> ' + sandhi.sthAne_antaratamaH(it, sivaSutra.js)
   }
+}
 
+void test_tulya_aasya_prayatnam() {
+  ['a', 'k', 'p', 'y', 'e', 'v'].each { println it + ' = ' + samjna.aasya(it) }
+  [['a', 'A'], ['e','y'], ['A', 'k']].each { println it + " = " + samjna.savarNam(it) }
+}
+
+void test_akaH_savarNe_dIrghaH() {
+  println sandhi.apply('rAma ayaNam', sandhi.akaH_savarNe_dIrghaH)
+  println sandhi.apply('SEtA AgacCat.e', sandhi.akaH_savarNe_dIrghaH)
+  println sandhi.apply('et.e ed.AnEm', sandhi.akaH_savarNe_dIrghaH)
+  println sandhi.apply('vaD.u upacAra:', sandhi.akaH_savarNe_dIrghaH)
+  
+  assert sandhi.apply('rAma ayaNam', sandhi.akaH_savarNe_dIrghaH) == 'rAmAyaNam'
+  assert sandhi.apply('vAk aBed.a:', sandhi.akaH_savarNe_dIrghaH) == 'vAk aBed.a:'
+  
+}
+
+void test_aad_guNaH() {
+  println sandhi.apply('BU a', sandhi.aad_guNaH)
+  
+  assert sandhi.apply('BU a', sandhi.aad_guNaH) == 'BO a'
+}
+
+void test_auto_sandhi() {
+  ['rAma ayaNam', 'SEtA AgacCat.e', 'vAk aBed.a:', 'BU a', 'et.e ape'].each {
+    println it + ' = ' + sandhi.auto(it)
+  }
 }
 
 void test_pratyahara_dsl() {
   use(ch8.schemes.Dsl) {
-    println 'cr'.pratyahara
-    assert 'cr'.pratyahara == SivaSutra.instance.cr 
+    println 'sap'.pratyaya
+    //assert 'cr'.pratyahara == sivaSutra.cr 
     
-    println 'bhU'.dhatu
+    println 'BU'.dhatu + 'sap'.pratyaya + 't.en'.pratyaya
   }
 }
+
+void test_dhatu_padam() {
+  use (ch8.schemes.Dsl) {
+    def a1 = 'BU'.dhatu + 'sap'.pratyaya + 't.en'.pratyaya
+    def a2 = sandhi.apply(a1, sandhi.aad_guNaH)
+    def padam = sandhi.apply(a2, sandhi.eco_ayavaayaavaH)
+    println 'BU + sap + te.n' + ' = ' + padam
+  }
+}
+
+/** ***********************************************************************************
+ *  ************  Test Calls ************** ************** ************** **************
+ *  ***********************************************************************************
+ */
 
 void runAllTests() {
   java.lang.reflect.Method[] m = this.getClass().getMethods().collect { it.name.startsWith('test_') ? it : ''} - '' 
@@ -329,8 +344,12 @@ StopWatch.start()
 //test_verse_quarters()
 //test_varnas_hk()
 //test_find_anga()
+//test_sthAne_antaratamaH()
+//test_tulya_aasya_prayatnam()
+//test_akaH_savarNe_dIrghaH()
 //test_purvarupa_sandhi()
-test_sthAne_antaratamaH()
 //test_pratyahara_dsl()
+//test_dhatu_padam()
+test_auto_sandhi()
 
 println StopWatch.stop()

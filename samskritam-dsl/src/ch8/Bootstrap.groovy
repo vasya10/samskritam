@@ -21,16 +21,21 @@ ArrayList.metaClass.range = { first, last ->
  * @usage used in purva sandhi
  * @given list of varnas
  * @result last varna is replaced with the given parameter
+ * @return the modified delegate (list)
  * 
  * @example
  */
-ArrayList.metaClass.replaceLast = { x -> delegate[delegate.size()-1] = x }
+ArrayList.metaClass.replaceLast = { x -> delegate[delegate.size()-1] = x; delegate }
+
+ArrayList.metaClass.replaceFirst = { x -> delegate[0] = x; delegate }
 
 /**
  * @metamethod currently used for iko-yan-aci, but use sthAne antaratamaH
  */
-ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }
 //ArrayList.metaClass.substitute = { sub, k -> sub[delegate.indexOf(k)] }
+//Given two lists (delegate, otherList), find the index of given in the delegate, but get the corresponding item from the other list
+// [i,u,r.,l.]([y,v,r,l], u) -> v .... because indexOf(u) == indexOf(v) 
+ArrayList.metaClass.substitute = { otherList, given -> otherList[delegate.indexOf(given)] }
 
 /**
  * @metamethod get a list of prev,current,next set from a list

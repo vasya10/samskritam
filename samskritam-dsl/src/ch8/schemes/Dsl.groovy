@@ -27,7 +27,8 @@ class Dsl {
   } 
   
   def getPratyaya() {
-    return new Pratyaya(value: this)
+    Pratyaya p = new Pratyaya(this)
+    return p
   }
   
   def getUnicode() {
@@ -35,6 +36,6 @@ class Dsl {
   }
   
   def getDhatu() {
-    return new Dhatu().load(this)
+    return new Dhatu(this) //).load(this)
   }
 }
