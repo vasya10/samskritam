@@ -3,23 +3,31 @@ Author: vasya10
 Blessed Date: Nov 2011
 
 ==================================================================================================================================
+PROJECT BACKGROUND:
+ 
+ - Explore how fundamentally modern programming can be changed based on techniques of Panini's Ashtadhyayi
+ - Many modern algorithmic principles and techniques have been used in Ashtadhyayi, including OOP, Functional Programming, Procedural 
+ - There are several techniques used by Panini, still not used in modern programming. Application of such techniques could provide a different landscape of how programming is done in future
+ - For parallels of modern programming and Panini's techniques, see some of my blogs at http://vagartham.blogspot.com/search/label/programming
 
-Goals:
+PROJECT GOALS:
 
- - Provide a consistent domain-specific-language medium to analyse samskritam both lexically and syntactically
+ - The language Samskritam aka Sanskrit, has a rich set of linguistic features that are syntactically and lexically analyzable and broken down into meaningful mnemonics 
+ - Provide a consistent domain-specific-language medium to analyse samskritam language both lexically and syntactically
  - DSL must be usable by any samskritam pandit and not restricted to programmers
  - Code Panini's ashtadhyayI rules in a very simplified manner, using meta-programming techniques
  - Samjna, sandhi, dhatu and similar operations must be achieved in an arithmetic way 
  - Transliteration scripts are pluggable (IAST, ITRANS, HK etc)
+ 
 
 ==================================================================================================================================
 
-Possibilities:
+CURRENT FEATURES:
 
 1. Dynamically use maheshvara sutra pratyahara as a string or property
 
-	- sivasutra.Ic; will expand to I (ai), O. (au)
-	- sivasutra.hl; will expand to a list of all consonants
+  - sivasutra.Ic; will expand to I (ai), O. (au)
+  - sivasutra.hl; will expand to a list of all consonants
   - sivasutra.ac; will expand to a list of all vowels
   
 2. Model samjna sutra-s using arithmetic/algebraic notations:
@@ -41,15 +49,14 @@ Possibilities:
 
   - 'kr.s.Na:'.unicode() should produce &#x915;&#x943;&#x937;&#x94D;&#x923;&#x903;
  
- 
-==================================================================================================================================
- 
-To Do:
-
- - Do sandhi rules using simple arithmetics on strings (plus and minus)
+6. Do sandhi rules using simple arithmetics on strings (plus and minus)
    
    * ka: + ca => kasca
    * rAma + ayaNam => rAmAyanam 
+ 
+==================================================================================================================================
+ 
+FUTURE RELEASE:
    
  - Do dhatu forms using simple arithmetics on strings (plus and minus)
  
